@@ -667,44 +667,68 @@ if (placeDescEl) {
   document.getElementById('pp-biz')?.replaceChildren(document.createTextNode(bizStr));
 
   // Тех. характеристики ЗУ — соберём в один текст из массива technicalCharacteristics
-  (function fillTech(){
-    const host = document.getElementById('pp-tech');
-    if (!host) return;
-    let text = 'Информация отсутствует.';
-    if (Array.isArray(item.technicalCharacteristics) && item.technicalCharacteristics.length) {
-      text = item.technicalCharacteristics
-        .map(tc => (tc.label && tc.value) ? `${tc.label} ${tc.value}` : (tc.value || tc.label))
-        .filter(Boolean)
-        .join(' · ');
-    }
-    host.replaceChildren(document.createTextNode(text));
-  })();
+  // (function fillTech(){
+  //   const host = document.getElementById('pp-tech');
+  //   if (!host) return;
+  //   let text = 'Информация отсутствует.';
+  //   if (Array.isArray(item.technicalCharacteristics) && item.technicalCharacteristics.length) {
+  //     text = item.technicalCharacteristics
+  //       .map(tc => (tc.label && tc.value) ? `${tc.label} ${tc.value}` : (tc.value || tc.label))
+  //       .filter(Boolean)
+  //       .join(' · ');
+  //   }
+  //   host.replaceChildren(document.createTextNode(text));
+  // })();
 
-  // ====== Инфраструктура (новые ID)
-  // Транспортная
-(function fillInfraTransport(){
-  const ul = document.getElementById('pp-infra-transport');
-  if (!ul) return;
-  if (Array.isArray(item.transportCharacteristics) && item.transportCharacteristics.length) {
-    ul.innerHTML = item.transportCharacteristics
-      .map(tc => `<div>${tc.label} ${tc.value}</div>`)
-      .join('');
-  } else {
-    ul.innerHTML = '<div>Информация отсутствует.</div>';
-  }
+  (function fillTech() {
+  const host = document.getElementById('pp-tech');
+  if (!host) return;
+
+  const arr = Array.isArray(item.technicalCharacteristics) ? item.technicalCharacteristics : [];
+  host.textContent = arr.length
+    ? arr.map(tc => [tc.label, tc.value, tc.text, tc.name].filter(Boolean).join(' ')).join(' · ')
+    : 'Информация отсутствует.';
 })();
 
-  // Жилая — берём из item.characteristics 
-(function fillInfraResidential(){
+  // ====== Инфраструктура (новые ID)
+// Транспортная
+(function fillInfraTransport() {
+  const ul = document.getElementById('pp-infra-transport');
+  if (!ul) return;
+
+  const arr = Array.isArray(item.transportCharacteristics) ? item.transportCharacteristics : [];
+  if (!arr.length) {
+    ul.innerHTML = '<div>Информация отсутствует.</div>';
+    return;
+  }
+
+  // чистим и добавляем <li>
+  ul.innerHTML = '';
+  arr.forEach(tc => {
+    const li = document.createElement('li');
+    // Собираем только существующие части (label может не быть)
+    li.textContent = [tc.label, tc.value, tc.text, tc.name].filter(Boolean).join(' ');
+    ul.appendChild(li);
+  });
+})();
+
+// Жилая
+(function fillInfraResidential() {
   const ul = document.getElementById('pp-infra-residential');
   if (!ul) return;
-  if (Array.isArray(item.characteristics) && item.characteristics.length) {
-    ul.innerHTML = item.characteristics
-      .map(c => `<div>${c.label} ${c.value}</div>`)
-      .join('');
-  } else {
+
+  const arr = Array.isArray(item.characteristics) ? item.characteristics : [];
+  if (!arr.length) {
     ul.innerHTML = '<div>Информация отсутствует.</div>';
+    return;
   }
+
+  ul.innerHTML = '';
+  arr.forEach(c => {
+    const li = document.createElement('li');
+    li.textContent = [c.label, c.value, c.text, c.name].filter(Boolean).join(' ');
+    ul.appendChild(li);
+  });
 })();
 
   // Экосистема 
